@@ -13,19 +13,30 @@ typedef struct _my_struct_
 MPOOL_DEF(CHN);
 int main(void)
 {
-    my_struct_t *myptr=NULL;
+    int i;
 #define MAX_STRUCTS     4
-    void *ptr = malloc(sizeof(my_struct_t)*MAX_STRUCTS);
+    my_struct_t *myptr[MAX_STRUCTS]={0};
+    my_struct_t *ptr;
+    void *baseptr = malloc(sizeof(my_struct_t)*MAX_STRUCTS);
 
-    MPOOL_INIT(CHN, ptr, MAX_STRUCTS, my_struct_t);
+    MPOOL_INIT(CHN, baseptr, MAX_STRUCTS, my_struct_t);
     MPOOL_STATS("init", CHN);
-    MPOOL_ALLOC(CHN, myptr);
+
+    for(i=0;i<MAX_STRUCTS;i++)
+    {
+        MPOOL_ALLOC(CHN, myptr[i]);
+        MPOOL_STATS("allocin", CHN);
+        {
+            MPOOL_DEALLOC(CHN, myptr[i]);
+            MPOOL_STATS("deallocin", CHN);
+        }
+    }
+    MPOOL_ALLOC(CHN, ptr);
     MPOOL_STATS("alloc", CHN);
-    MPOOL_ALLOC(CHN, myptr);
-    MPOOL_STATS("alloc", CHN);
-    MPOOL_DEALLOC(CHN, myptr);
+
+    MPOOL_DEALLOC(CHN, ptr);
     MPOOL_STATS("dealloc", CHN);
-    MPOOL_ALLOC(CHN, myptr);
+    MPOOL_ALLOC(CHN, myptr[0]);
     MPOOL_STATS("alloc", CHN);
 
     MPOOL_DEINIT(CHN);

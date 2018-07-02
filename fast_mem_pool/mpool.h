@@ -1,6 +1,10 @@
 #ifndef _MPOOL_H_
 #define _MPOOL_H_
 
+#define INFO(...)   \
+    printf(__VA_ARGS__);\
+    fflush(stdout);
+
 typedef struct _fast_mpool_
 {
     uint32_t    numOfBlks;
@@ -17,10 +21,9 @@ typedef struct _fast_mpool_
 #define MPOOL_STATS(LABEL, NAME)   \
 {\
     mpool_t *mp = &MPOOL_NAME(NAME);\
-    printf("[%s] numOfBlks=%d, numInited=%d, numFreeBlks=%d, start=%p, next=%p\n",\
+    INFO("[%s] numOfBlks=%d, numInited=%d, numFreeBlks=%d, start=%p, next=%p\n",\
         LABEL, mp->numOfBlks, mp->numInited, mp->numFreeBlks, \
         mp->start, mp->next);\
-    fflush(stdout);\
 }
 
 #define MPOOL_INIT(NAME, BASEPTR, NUM_BLKS, STRUCT)    \
@@ -35,7 +38,7 @@ typedef struct _fast_mpool_
     mp->next        = mp->start;\
     for(mpi=0;mpi<NUM_BLKS;mpi++)\
     {\
-        STRUCT *mpst  = BASEPTR + sizeof(STRUCT);\
+        STRUCT *mpst  = (STRUCT *)((uint8_t*)(BASEPTR) + (mpi*sizeof(STRUCT)));\
         mpst->mpool_p = 0;\
     }\
 }
@@ -43,7 +46,7 @@ typedef struct _fast_mpool_
 #define MPOOL_DEINIT(NAME)      //For Future if needed
 
 #define ADDR_FROM_INDEX(MP, I)  \
-    ((MP)->start + ((I) + (MP)->blkSz))
+    ((MP)->start + ((I) * (MP)->blkSz))
 
 #define MPOOL_ALLOC(NAME, OUTPTR)   \
 {\
@@ -67,9 +70,13 @@ typedef struct _fast_mpool_
             mp->next = NULL;\
         }\
     }\
+    if(!(OUTPTR))\
+    {\
+        printf("ALLOC FAILED\n");\
+    }\
 }
 
-#define IDX_FROM_ADDR(PTR)  ((uint32_t)(PTR - mp->start)/mp->blkSz)
+#define IDX_FROM_ADDR(TPTR)  ((uint32_t)(TPTR - mp->start)/mp->blkSz)
 #define MPOOL_DEALLOC(NAME, PTR)  \
 {\
     typeof(PTR) rec = PTR;\
