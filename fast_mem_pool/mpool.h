@@ -28,7 +28,6 @@ typedef struct _fast_mpool_
 
 #define MPOOL_INIT(NAME, BASEPTR, NUM_BLKS, STRUCT)    \
 {\
-    int mpi;\
     mpool_t *mp = &MPOOL_NAME(NAME);\
     mp->numInited   = 0;\
     mp->numFreeBlks = (NUM_BLKS);\
@@ -36,11 +35,6 @@ typedef struct _fast_mpool_
     mp->numOfBlks   = (NUM_BLKS);\
     mp->start       = (BASEPTR);\
     mp->next        = mp->start;\
-    for(mpi=0;mpi<NUM_BLKS;mpi++)\
-    {\
-        STRUCT *mpst  = (STRUCT *)((uint8_t*)(BASEPTR) + (mpi*sizeof(STRUCT)));\
-        mpst->mpool_p = 0;\
-    }\
 }
 
 #define MPOOL_DEINIT(NAME)      //For Future if needed
