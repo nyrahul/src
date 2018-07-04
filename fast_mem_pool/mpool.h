@@ -64,10 +64,6 @@ typedef struct _fast_mpool_
             mp->next = NULL;\
         }\
     }\
-    if(!(OUTPTR))\
-    {\
-        printf("ALLOC FAILED\n");\
-    }\
 }
 
 #define IDX_FROM_ADDR(TPTR)  ((uint32_t)(TPTR - mp->start)/mp->blkSz)
