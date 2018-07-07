@@ -15,6 +15,7 @@ int main(void)
     for(i=0;i<200;i++)
     {
         LPOP_INCR(seq);
+        printf("%3d, Seq=%3d\n", i, seq);
     }
     printf("%u %d\n", (uint8_t)-16, -16);
     return 0;
