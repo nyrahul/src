@@ -1,89 +1,97 @@
+
 #ifndef _MPOOL_H_
 #define _MPOOL_H_
 
-#define INFO(...)   \
-    printf(__VA_ARGS__);\
-    fflush(stdout);
+/*
+----------[Fast fixed-size memory pool]-------------
+- Contains no loops in any API
+
+Ref: http://www.thinkmind.org/download.php?articleid=computation_tools_2012_1_10_80006
+*/
+
+#ifndef offsetof
+#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+#endif
 
 typedef struct _fast_mpool_
 {
-    uint32_t    numOfBlks;
-    uint32_t    blkSz;
-    uint32_t    numInited;
-    uint32_t    numFreeBlks;
-    uint8_t     *start;
-    uint8_t     *next;
+    uint32_t    numOfBlks,  //Total number of blocks
+                blkSz,      //Size of the user-supplied block structure
+                numInited,  //Number of blocks whose mpool index is initialized
+                numFreeBlks,//Number of Free blocks
+                poff;       //Offset of index in user-supplied block structure
+    uint8_t     *start,     //Start pointer of the storage
+                *next;      //Next pointer of the storage
 }mpool_t;
 
-#define MPOOL_NAME(NAME)    NAME##mpool
-#define MPOOL_DEF(NAME)     mpool_t MPOOL_NAME(NAME);
-
-#define MPOOL_STATS(LABEL, NAME)   \
-{\
-    mpool_t *mp = &MPOOL_NAME(NAME);\
-    INFO("[%s] numOfBlks=%d, numInited=%d, numFreeBlks=%d, start=%p, next=%p\n",\
-        LABEL, mp->numOfBlks, mp->numInited, mp->numFreeBlks, \
-        mp->start, mp->next);\
+static inline void mpool_init(mpool_t *mp, uint8_t *bptr, 
+        uint32_t numBlks, uint32_t blksz, uint32_t poff)
+{
+    mp->numInited   = 0;
+    mp->numFreeBlks = numBlks;
+    mp->blkSz       = blksz;
+    mp->numOfBlks   = numBlks;
+    mp->poff        = poff;
+    mp->start       = bptr;
+    mp->next        = mp->start;
 }
 
-#define MPOOL_INIT(NAME, BASEPTR, NUM_BLKS, STRUCT)    \
-{\
-    mpool_t *mp = &MPOOL_NAME(NAME);\
-    mp->numInited   = 0;\
-    mp->numFreeBlks = (NUM_BLKS);\
-    mp->blkSz       = (sizeof(STRUCT));\
-    mp->numOfBlks   = (NUM_BLKS);\
-    mp->start       = (BASEPTR);\
-    mp->next        = mp->start;\
+static inline void mpool_deinit(mpool_t *mp)
+{
+    //Nothing to do here. For future..
 }
 
-#define MPOOL_DEINIT(NAME)      //For Future if needed
+#define ADDR_FROM_INDEX(MP, I)  ((MP)->start + ((I) * (MP)->blkSz))
+#define IDX_FROM_ADDR(MP, TPTR)     ((uint32_t)(TPTR - (MP)->start)/(MP)->blkSz)
+#define BIDX(PTR, POFF)         (*(uint32_t*)((PTR)+(POFF)))
 
-#define ADDR_FROM_INDEX(MP, I)  \
-    ((MP)->start + ((I) * (MP)->blkSz))
-
-#define MPOOL_ALLOC(NAME, OUTPTR)   \
-{\
-    mpool_t *mp = &MPOOL_NAME(NAME);\
-    OUTPTR = NULL;\
-    if(mp->numInited < mp->numOfBlks) \
-    {\
-        typeof(OUTPTR) rec = (typeof(OUTPTR))ADDR_FROM_INDEX(mp, mp->numInited);\
-        rec->mpool_p = ++mp->numInited;\
-    }\
-    if(mp->numFreeBlks) \
-    {\
-        (OUTPTR) = (typeof(OUTPTR))mp->next;\
-        if(--mp->numFreeBlks)\
-        {\
-            typeof(OUTPTR) tmp_rec = (typeof(OUTPTR))mp->next;\
-            mp->next = ADDR_FROM_INDEX(mp, tmp_rec->mpool_p);\
-        }\
-        else\
-        {\
-            mp->next = NULL;\
-        }\
-    }\
+static inline void *mpool_alloc(mpool_t *mp)
+{
+    void *alloc_ptr = NULL;
+    if(mp->numInited < mp->numOfBlks) 
+    {
+        uint8_t *rec = ADDR_FROM_INDEX(mp, mp->numInited);
+        BIDX(rec, mp->poff) = ++mp->numInited;
+    }
+    if(mp->numFreeBlks) 
+    {
+        alloc_ptr = mp->next;
+        if(--mp->numFreeBlks) 
+        {
+            uint32_t blkidx = BIDX(mp->next, mp->poff);
+            mp->next = ADDR_FROM_INDEX(mp, blkidx);
+        } 
+        else 
+        {
+            mp->next = NULL;
+        }
+    }
+    return alloc_ptr;
 }
 
-#define IDX_FROM_ADDR(TPTR)  ((uint32_t)(TPTR - mp->start)/mp->blkSz)
-#define MPOOL_DEALLOC(NAME, PTR)  \
-{\
-    typeof(PTR) rec = PTR;\
-    if(rec)\
-    {\
-        mpool_t *mp = &MPOOL_NAME(NAME);\
-        if(mp->next)\
-        {\
-            rec->mpool_p = IDX_FROM_ADDR(mp->next);\
-        }\
-        else\
-        {\
-            rec->mpool_p = mp->numOfBlks;\
-        }\
-        mp->next = (uint8_t*)PTR;\
-        mp->numFreeBlks++;\
-    }\
+static inline void mpool_dealloc(mpool_t *mp, void *ptr)
+{
+    if(mp && ptr) 
+    {
+        if(mp->next) 
+        {
+            BIDX(ptr, mp->poff) = IDX_FROM_ADDR(mp, mp->next);
+        } 
+        else 
+        {
+            BIDX(ptr, mp->poff) = mp->numOfBlks;
+        }
+        mp->next = (uint8_t*)ptr;
+        mp->numFreeBlks++;
+    }
+}
+
+static inline void mpool_info(mpool_t *mp, char *label) 
+{
+    printf("[%s] numOfBlks=%u, numInited=%u, numFreeBlks=%u, poff=%u, "
+        "start=%p, next=%p\n",
+        label, mp->numOfBlks, mp->numInited, mp->numFreeBlks,
+        mp->poff, mp->start, mp->next);
 }
 
 #endif //_MPOOL_H_
