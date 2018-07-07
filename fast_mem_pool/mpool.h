@@ -1,4 +1,3 @@
-
 #ifndef _MPOOL_H_
 #define _MPOOL_H_
 
@@ -42,12 +41,13 @@ static inline void mpool_deinit(mpool_t *mp)
 }
 
 #define ADDR_FROM_INDEX(MP, I)  ((MP)->start + ((I) * (MP)->blkSz))
-#define IDX_FROM_ADDR(MP, TPTR)     ((uint32_t)(TPTR - (MP)->start)/(MP)->blkSz)
+#define IDX_FROM_ADDR(MP, TPTR) ((uint32_t)(TPTR - (MP)->start)/(MP)->blkSz)
 #define BIDX(PTR, POFF)         (*(uint32_t*)((PTR)+(POFF)))
 
 static inline void *mpool_alloc(mpool_t *mp)
 {
     void *alloc_ptr = NULL;
+
     if(mp->numInited < mp->numOfBlks) 
     {
         uint8_t *rec = ADDR_FROM_INDEX(mp, mp->numInited);
