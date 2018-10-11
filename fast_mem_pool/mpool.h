@@ -1,10 +1,6 @@
-#ifndef _MPOOL_H_
-#define _MPOOL_H_
+#pragma once
 
-/*
-----------[Fast fixed-size memory pool]-------------
-- Contains no loops in any API
-
+/* ----------[Fast fixed-size memory pool]-------------
 Ref: http://www.thinkmind.org/download.php?articleid=computation_tools_2012_1_10_80006
 */
 
@@ -23,21 +19,15 @@ typedef struct _fast_mpool_
                 *next;      //Next pointer of the storage
 }mpool_t;
 
-static inline void mpool_init(mpool_t *mp, uint8_t *bptr, 
-        uint32_t numBlks, uint32_t blksz, uint32_t poff)
+static inline void mpool_init(mpool_t *mp, uint8_t *bptr,
+        uint32_t numBlks, uint32_t blksz)
 {
     mp->numInited   = 0;
     mp->numFreeBlks = numBlks;
     mp->blkSz       = blksz;
     mp->numOfBlks   = numBlks;
-    mp->poff        = poff;
     mp->start       = bptr;
     mp->next        = mp->start;
-}
-
-static inline void mpool_deinit(mpool_t *mp)
-{
-    //Nothing to do here. For future..
 }
 
 #define ADDR_FROM_INDEX(MP, I)  ((MP)->start + ((I) * (MP)->blkSz))
@@ -48,20 +38,20 @@ static inline void *mpool_alloc(mpool_t *mp)
 {
     void *alloc_ptr = NULL;
 
-    if(mp->numInited < mp->numOfBlks) 
+    if(mp->numInited < mp->numOfBlks)
     {
-        uint8_t *rec = ADDR_FROM_INDEX(mp, mp->numInited);
-        BIDX(rec, mp->poff) = ++mp->numInited;
+        uint32_t *rec = (uint32_t*)ADDR_FROM_INDEX(mp, mp->numInited);
+        *rec = mp->numInited + 1;
+        ++mp->numInited;
     }
-    if(mp->numFreeBlks) 
+    if(mp->numFreeBlks)
     {
         alloc_ptr = mp->next;
-        if(--mp->numFreeBlks) 
+        if(--mp->numFreeBlks)
         {
-            uint32_t blkidx = BIDX(mp->next, mp->poff);
-            mp->next = ADDR_FROM_INDEX(mp, blkidx);
-        } 
-        else 
+            mp->next = ADDR_FROM_INDEX(mp, *(uint32_t*)mp->next);
+        }
+        else
         {
             mp->next = NULL;
         }
@@ -71,27 +61,25 @@ static inline void *mpool_alloc(mpool_t *mp)
 
 static inline void mpool_dealloc(mpool_t *mp, void *ptr)
 {
-    if(mp && ptr) 
+    if(!mp || !ptr)
+        return;
+    if(mp->next)
     {
-        if(mp->next) 
-        {
-            BIDX(ptr, mp->poff) = IDX_FROM_ADDR(mp, mp->next);
-        } 
-        else 
-        {
-            BIDX(ptr, mp->poff) = mp->numOfBlks;
-        }
-        mp->next = (uint8_t*)ptr;
-        mp->numFreeBlks++;
+        *(uint32_t*)ptr = IDX_FROM_ADDR(mp, mp->next);
     }
+    else
+    {
+        *(uint32_t*)ptr = mp->numOfBlks;
+    }
+    mp->next = (uint8_t*)ptr;
+    mp->numFreeBlks++;
 }
 
-static inline void mpool_info(mpool_t *mp, char *label) 
+static inline void mpool_info(mpool_t *mp, char *label)
 {
-    printf("[%s] numOfBlks=%u, numInited=%u, numFreeBlks=%u, poff=%u, "
+    printf("[%s] numOfBlks=%u, numInited=%u, numFreeBlks=%u, "
         "start=%p, next=%p\n",
         label, mp->numOfBlks, mp->numInited, mp->numFreeBlks,
-        mp->poff, mp->start, mp->next);
+        mp->start, mp->next);
 }
 
-#endif //_MPOOL_H_
