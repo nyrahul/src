@@ -1,0 +1,10 @@
+apiVersion: security.knoxpolicy.com/v1
+kind: StaticPolicyUrl
+metadata:
+  name: wordpress-mysql-mud-url
+  description: MUD policy profile URL
+spec:
+  policyurl:
+    - url: https://mudprofiles.com/wordpress-mysql
+  action:
+    FetchOnStartup
