@@ -1,7 +1,12 @@
 /*
  * The aim of the code is to implement wildcard matching code that can be used
  * in eBPF.
- * Limitations of the code: we assume that the max file path size will be 256
+ * Assumptions:
+ * 1. assumes that the max file path size will be 256
+ * 2. only '*' and '?' wildcards allowed
+ *
+ * Credits: https://stackoverflow.com/questions/34021194/ideas-for-implementing-wildcard-matching-in-c
+ * Removed unbounded loops from the above implementation.
  */
 
 #include <stdio.h>
@@ -13,57 +18,11 @@
 /*
  * This function has to be eBPF compliant which means no unbound loops.
  */
-#if 0
-int wildcardMatch(const char* string, const char* wild)
-{
-    const char* cp = NULL, *mp = NULL;
-
-    while ((*string) && (*wild != '*'))
-    {
-        if ((*wild != *string) && (*wild != '?'))
-        {
-            return 0;
-        }
-        wild++;
-        string++;
-    }
-
-    while (*string)
-    {
-        if (*wild == '*')
-        {
-            if (!*++wild)
-            {
-                return 1;
-            }
-            mp = wild;
-            cp = string+1;
-        }
-        else if ((*wild == *string) || (*wild == '?'))
-        {
-            wild++;
-            string++;
-        }
-        else
-        {
-            wild = mp;
-            string = cp++;
-        }
-    }
-
-    while (*wild == '*')
-    {
-        wild++;
-    }
-    return !*wild;
-}
-#endif
-
-#if 1
 int wildcardMatch(const char* string, const char* wild)
 {
 	int i, w = 0, mp = 0, cp = 0;
 
+#pragma unroll
 	for (i = 0; i < MAX_PATH_SZ; i++) {
 		if (!string[i] || wild[i] == '*') break;
 
@@ -71,6 +30,7 @@ int wildcardMatch(const char* string, const char* wild)
 	}
 	w = i;
 
+#pragma unroll
 	for (; i < MAX_PATH_SZ;) {
 		if (!string[i]) break;
 
@@ -87,12 +47,12 @@ int wildcardMatch(const char* string, const char* wild)
 		}
 	}
 
+#pragma unroll
 	for (; w < MAX_PATH_SZ; w++) {
 		if (wild[w] != '*') break;
 	}
     return !wild[w];
 }
-#endif
 
 typedef struct {
 	char *pat;
