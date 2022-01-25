@@ -1,0 +1,44 @@
+---
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: autopol-file-dmbdaqwdtvgctsi
+  namespace: default
+spec:
+  severity: 1
+  selector:
+    matchLabels:
+      app: demo-deployment
+  process:
+    matchPaths:
+    - path: /usr/bin/sleep
+      fromSource:
+      - path: /bin/sh
+  action: Allow
+---
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: autopol-file-xxpyyirkevjrmbu.a
+  namespace: default
+spec:
+  severity: 1
+  selector:
+    matchLabels:
+      app: demo-deployment
+  file:
+    matchPaths:
+    - path: /etc/ld.so.cache
+      fromSource:
+      - path: /usr/bin/sleep
+    - path: /lib/x86_64-linux-gnu/libc.so.6
+      fromSource:
+      - path: /usr/bin/sleep
+    - path: /usr/lib/x86_64-linux-gnu/ld-2.31.so
+      fromSource:
+      - path: /usr/bin/sleep
+    - path: /usr/lib/x86_64-linux-gnu/libc-2.31.so
+      fromSource:
+      - path: /usr/bin/sleep
+  action: Allow
+---
