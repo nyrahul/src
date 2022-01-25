@@ -1,0 +1,725 @@
+{
+  "cloudcontrollermanager.config.k8s.io": {
+    "Generic": {
+      "Port": 0,
+      "Address": "0.0.0.0",
+      "MinResyncPeriod": "12h0m0s",
+      "ClientConnection": {
+        "Kubeconfig": "",
+        "AcceptContentTypes": "",
+        "ContentType": "application/vnd.kubernetes.protobuf",
+        "QPS": 20,
+        "Burst": 30
+      },
+      "ControllerStartInterval": "0s",
+      "LeaderElection": {
+        "LeaderElect": false,
+        "LeaseDuration": "15s",
+        "RenewDeadline": "10s",
+        "RetryPeriod": "2s",
+        "ResourceLock": "leases",
+        "ResourceName": "cloud-controller-manager",
+        "ResourceNamespace": "kube-system"
+      },
+      "Controllers": [
+        "*"
+      ],
+      "Debugging": {
+        "EnableProfiling": false,
+        "EnableContentionProfiling": false
+      },
+      "LeaderMigrationEnabled": false,
+      "LeaderMigration": {
+        "LeaderName": "",
+        "ResourceLock": "",
+        "ControllerLeaders": null
+      }
+    },
+    "KubeCloudShared": {
+      "CloudProvider": {
+        "Name": "k3s",
+        "CloudConfigFile": ""
+      },
+      "ExternalCloudVolumePlugin": "",
+      "UseServiceAccountCredentials": false,
+      "AllowUntaggedCloud": false,
+      "RouteReconciliationPeriod": "10s",
+      "NodeMonitorPeriod": "5s",
+      "ClusterName": "kubernetes",
+      "ClusterCIDR": "10.42.0.0/16",
+      "AllocateNodeCIDRs": true,
+      "CIDRAllocatorType": "RangeAllocator",
+      "ConfigureCloudRoutes": false,
+      "NodeSyncPeriod": "0s"
+    },
+    "ServiceController": {
+      "ConcurrentServiceSyncs": 1
+    },
+    "NodeStatusUpdateFrequency": "1m0s"
+  },
+  "componentconfig": {
+    "apiVersion": "kubescheduler.config.k8s.io/v1beta2",
+    "Parallelism": 16,
+    "LeaderElection": {
+      "LeaderElect": false,
+      "LeaseDuration": "15s",
+      "RenewDeadline": "10s",
+      "RetryPeriod": "2s",
+      "ResourceLock": "leases",
+      "ResourceName": "kube-scheduler",
+      "ResourceNamespace": "kube-system"
+    },
+    "ClientConnection": {
+      "Kubeconfig": "/var/lib/rancher/k3s/server/cred/scheduler.kubeconfig",
+      "AcceptContentTypes": "",
+      "ContentType": "application/vnd.kubernetes.protobuf",
+      "QPS": 50,
+      "Burst": 100
+    },
+    "HealthzBindAddress": "0.0.0.0:10251",
+    "MetricsBindAddress": "0.0.0.0:10251",
+    "EnableProfiling": false,
+    "EnableContentionProfiling": true,
+    "PercentageOfNodesToScore": 0,
+    "PodInitialBackoffSeconds": 1,
+    "PodMaxBackoffSeconds": 10,
+    "Profiles": [
+      {
+        "SchedulerName": "default-scheduler",
+        "Plugins": {
+          "QueueSort": {
+            "Enabled": [
+              {
+                "Name": "PrioritySort",
+                "Weight": 0
+              }
+            ],
+            "Disabled": null
+          },
+          "PreFilter": {
+            "Enabled": [
+              {
+                "Name": "NodeResourcesFit",
+                "Weight": 0
+              },
+              {
+                "Name": "NodePorts",
+                "Weight": 0
+              },
+              {
+                "Name": "VolumeRestrictions",
+                "Weight": 0
+              },
+              {
+                "Name": "PodTopologySpread",
+                "Weight": 0
+              },
+              {
+                "Name": "InterPodAffinity",
+                "Weight": 0
+              },
+              {
+                "Name": "VolumeBinding",
+                "Weight": 0
+              },
+              {
+                "Name": "NodeAffinity",
+                "Weight": 0
+              }
+            ],
+            "Disabled": null
+          },
+          "Filter": {
+            "Enabled": [
+              {
+                "Name": "NodeUnschedulable",
+                "Weight": 0
+              },
+              {
+                "Name": "NodeName",
+                "Weight": 0
+              },
+              {
+                "Name": "TaintToleration",
+                "Weight": 0
+              },
+              {
+                "Name": "NodeAffinity",
+                "Weight": 0
+              },
+              {
+                "Name": "NodePorts",
+                "Weight": 0
+              },
+              {
+                "Name": "NodeResourcesFit",
+                "Weight": 0
+              },
+              {
+                "Name": "VolumeRestrictions",
+                "Weight": 0
+              },
+              {
+                "Name": "EBSLimits",
+                "Weight": 0
+              },
+              {
+                "Name": "GCEPDLimits",
+                "Weight": 0
+              },
+              {
+                "Name": "NodeVolumeLimits",
+                "Weight": 0
+              },
+              {
+                "Name": "AzureDiskLimits",
+                "Weight": 0
+              },
+              {
+                "Name": "VolumeBinding",
+                "Weight": 0
+              },
+              {
+                "Name": "VolumeZone",
+                "Weight": 0
+              },
+              {
+                "Name": "PodTopologySpread",
+                "Weight": 0
+              },
+              {
+                "Name": "InterPodAffinity",
+                "Weight": 0
+              }
+            ],
+            "Disabled": null
+          },
+          "PostFilter": {
+            "Enabled": [
+              {
+                "Name": "DefaultPreemption",
+                "Weight": 0
+              }
+            ],
+            "Disabled": null
+          },
+          "PreScore": {
+            "Enabled": [
+              {
+                "Name": "InterPodAffinity",
+                "Weight": 0
+              },
+              {
+                "Name": "PodTopologySpread",
+                "Weight": 0
+              },
+              {
+                "Name": "TaintToleration",
+                "Weight": 0
+              },
+              {
+                "Name": "NodeAffinity",
+                "Weight": 0
+              }
+            ],
+            "Disabled": null
+          },
+          "Score": {
+            "Enabled": [
+              {
+                "Name": "NodeResourcesBalancedAllocation",
+                "Weight": 1
+              },
+              {
+                "Name": "ImageLocality",
+                "Weight": 1
+              },
+              {
+                "Name": "InterPodAffinity",
+                "Weight": 1
+              },
+              {
+                "Name": "NodeResourcesFit",
+                "Weight": 1
+              },
+              {
+                "Name": "NodeAffinity",
+                "Weight": 1
+              },
+              {
+                "Name": "PodTopologySpread",
+                "Weight": 2
+              },
+              {
+                "Name": "TaintToleration",
+                "Weight": 1
+              }
+            ],
+            "Disabled": null
+          },
+          "Reserve": {
+            "Enabled": [
+              {
+                "Name": "VolumeBinding",
+                "Weight": 0
+              }
+            ],
+            "Disabled": null
+          },
+          "Permit": {
+            "Enabled": null,
+            "Disabled": null
+          },
+          "PreBind": {
+            "Enabled": [
+              {
+                "Name": "VolumeBinding",
+                "Weight": 0
+              }
+            ],
+            "Disabled": null
+          },
+          "Bind": {
+            "Enabled": [
+              {
+                "Name": "DefaultBinder",
+                "Weight": 0
+              }
+            ],
+            "Disabled": null
+          },
+          "PostBind": {
+            "Enabled": null,
+            "Disabled": null
+          }
+        },
+        "PluginConfig": [
+          {
+            "Name": "DefaultPreemption",
+            "Args": {
+              "MinCandidateNodesPercentage": 10,
+              "MinCandidateNodesAbsolute": 100
+            }
+          },
+          {
+            "Name": "InterPodAffinity",
+            "Args": {
+              "HardPodAffinityWeight": 1
+            }
+          },
+          {
+            "Name": "NodeAffinity",
+            "Args": {
+              "AddedAffinity": null
+            }
+          },
+          {
+            "Name": "NodeResourcesBalancedAllocation",
+            "Args": {
+              "Resources": [
+                {
+                  "Name": "cpu",
+                  "Weight": 1
+                },
+                {
+                  "Name": "memory",
+                  "Weight": 1
+                }
+              ]
+            }
+          },
+          {
+            "Name": "NodeResourcesFit",
+            "Args": {
+              "IgnoredResources": null,
+              "IgnoredResourceGroups": null,
+              "ScoringStrategy": {
+                "Type": "LeastAllocated",
+                "Resources": [
+                  {
+                    "Name": "cpu",
+                    "Weight": 1
+                  },
+                  {
+                    "Name": "memory",
+                    "Weight": 1
+                  }
+                ],
+                "RequestedToCapacityRatio": null
+              }
+            }
+          },
+          {
+            "Name": "PodTopologySpread",
+            "Args": {
+              "DefaultConstraints": null,
+              "DefaultingType": "System"
+            }
+          },
+          {
+            "Name": "VolumeBinding",
+            "Args": {
+              "BindTimeoutSeconds": 600,
+              "Shape": null
+            }
+          }
+        ]
+      }
+    ],
+    "Extenders": null
+  },
+  "kubecontrollermanager.config.k8s.io": {
+    "Generic": {
+      "Port": 0,
+      "Address": "0.0.0.0",
+      "MinResyncPeriod": "12h0m0s",
+      "ClientConnection": {
+        "Kubeconfig": "",
+        "AcceptContentTypes": "",
+        "ContentType": "application/vnd.kubernetes.protobuf",
+        "QPS": 20,
+        "Burst": 30
+      },
+      "ControllerStartInterval": "0s",
+      "LeaderElection": {
+        "LeaderElect": false,
+        "LeaseDuration": "15s",
+        "RenewDeadline": "10s",
+        "RetryPeriod": "2s",
+        "ResourceLock": "leases",
+        "ResourceName": "kube-controller-manager",
+        "ResourceNamespace": "kube-system"
+      },
+      "Controllers": [
+        "*",
+        "-service",
+        "-route",
+        "-cloud-node-lifecycle"
+      ],
+      "Debugging": {
+        "EnableProfiling": false,
+        "EnableContentionProfiling": false
+      },
+      "LeaderMigrationEnabled": false,
+      "LeaderMigration": {
+        "LeaderName": "",
+        "ResourceLock": "",
+        "ControllerLeaders": null
+      }
+    },
+    "KubeCloudShared": {
+      "CloudProvider": {
+        "Name": "",
+        "CloudConfigFile": ""
+      },
+      "ExternalCloudVolumePlugin": "",
+      "UseServiceAccountCredentials": true,
+      "AllowUntaggedCloud": false,
+      "RouteReconciliationPeriod": "10s",
+      "NodeMonitorPeriod": "5s",
+      "ClusterName": "kubernetes",
+      "ClusterCIDR": "10.42.0.0/16",
+      "AllocateNodeCIDRs": true,
+      "CIDRAllocatorType": "RangeAllocator",
+      "ConfigureCloudRoutes": false,
+      "NodeSyncPeriod": "0s"
+    },
+    "AttachDetachController": {
+      "DisableAttachDetachReconcilerSync": false,
+      "ReconcilerSyncLoopPeriod": "1m0s"
+    },
+    "CSRSigningController": {
+      "ClusterSigningCertFile": "",
+      "ClusterSigningKeyFile": "",
+      "KubeletServingSignerConfiguration": {
+        "CertFile": "/var/lib/rancher/k3s/server/tls/server-ca.crt",
+        "KeyFile": "/var/lib/rancher/k3s/server/tls/server-ca.key"
+      },
+      "KubeletClientSignerConfiguration": {
+        "CertFile": "/var/lib/rancher/k3s/server/tls/client-ca.crt",
+        "KeyFile": "/var/lib/rancher/k3s/server/tls/client-ca.key"
+      },
+      "KubeAPIServerClientSignerConfiguration": {
+        "CertFile": "/var/lib/rancher/k3s/server/tls/client-ca.crt",
+        "KeyFile": "/var/lib/rancher/k3s/server/tls/client-ca.key"
+      },
+      "LegacyUnknownSignerConfiguration": {
+        "CertFile": "/var/lib/rancher/k3s/server/tls/client-ca.crt",
+        "KeyFile": "/var/lib/rancher/k3s/server/tls/client-ca.key"
+      },
+      "ClusterSigningDuration": "8760h0m0s"
+    },
+    "DaemonSetController": {
+      "ConcurrentDaemonSetSyncs": 2
+    },
+    "DeploymentController": {
+      "ConcurrentDeploymentSyncs": 5,
+      "DeploymentControllerSyncPeriod": "30s"
+    },
+    "StatefulSetController": {
+      "ConcurrentStatefulSetSyncs": 5
+    },
+    "DeprecatedController": {
+      "DeletingPodsQPS": 0.1,
+      "DeletingPodsBurst": 0,
+      "RegisterRetryCount": 10
+    },
+    "EndpointController": {
+      "ConcurrentEndpointSyncs": 5,
+      "EndpointUpdatesBatchPeriod": "0s"
+    },
+    "EndpointSliceController": {
+      "ConcurrentServiceEndpointSyncs": 5,
+      "MaxEndpointsPerSlice": 100,
+      "EndpointUpdatesBatchPeriod": "0s"
+    },
+    "EndpointSliceMirroringController": {
+      "MirroringConcurrentServiceEndpointSyncs": 5,
+      "MirroringMaxEndpointsPerSubset": 1000,
+      "MirroringEndpointUpdatesBatchPeriod": "0s"
+    },
+    "GarbageCollectorController": {
+      "EnableGarbageCollector": true,
+      "ConcurrentGCSyncs": 20,
+      "GCIgnoredResources": [
+        {
+          "Group": "",
+          "Resource": "events"
+        }
+      ]
+    },
+    "HPAController": {
+      "HorizontalPodAutoscalerSyncPeriod": "15s",
+      "HorizontalPodAutoscalerUpscaleForbiddenWindow": "3m0s",
+      "HorizontalPodAutoscalerDownscaleForbiddenWindow": "5m0s",
+      "HorizontalPodAutoscalerDownscaleStabilizationWindow": "5m0s",
+      "HorizontalPodAutoscalerTolerance": 0.1,
+      "HorizontalPodAutoscalerCPUInitializationPeriod": "5m0s",
+      "HorizontalPodAutoscalerInitialReadinessDelay": "30s"
+    },
+    "JobController": {
+      "ConcurrentJobSyncs": 5
+    },
+    "CronJobController": {
+      "ConcurrentCronJobSyncs": 5
+    },
+    "NamespaceController": {
+      "NamespaceSyncPeriod": "5m0s",
+      "ConcurrentNamespaceSyncs": 10
+    },
+    "NodeIPAMController": {
+      "ServiceCIDR": "",
+      "SecondaryServiceCIDR": "",
+      "NodeCIDRMaskSize": 0,
+      "NodeCIDRMaskSizeIPv4": 0,
+      "NodeCIDRMaskSizeIPv6": 0
+    },
+    "NodeLifecycleController": {
+      "EnableTaintManager": true,
+      "NodeEvictionRate": 0.1,
+      "SecondaryNodeEvictionRate": 0.01,
+      "NodeStartupGracePeriod": "1m0s",
+      "NodeMonitorGracePeriod": "40s",
+      "PodEvictionTimeout": "5m0s",
+      "LargeClusterSizeThreshold": 50,
+      "UnhealthyZoneThreshold": 0.55
+    },
+    "PersistentVolumeBinderController": {
+      "PVClaimBinderSyncPeriod": "15s",
+      "VolumeConfiguration": {
+        "EnableHostPathProvisioning": false,
+        "EnableDynamicProvisioning": true,
+        "PersistentVolumeRecyclerConfiguration": {
+          "MaximumRetry": 3,
+          "MinimumTimeoutNFS": 300,
+          "PodTemplateFilePathNFS": "",
+          "IncrementTimeoutNFS": 30,
+          "PodTemplateFilePathHostPath": "",
+          "MinimumTimeoutHostPath": 60,
+          "IncrementTimeoutHostPath": 30
+        },
+        "FlexVolumePluginDir": "/usr/libexec/kubernetes/kubelet-plugins/volume/exec/"
+      },
+      "VolumeHostCIDRDenylist": null,
+      "VolumeHostAllowLocalLoopback": true
+    },
+    "PodGCController": {
+      "TerminatedPodGCThreshold": 12500
+    },
+    "ReplicaSetController": {
+      "ConcurrentRSSyncs": 5
+    },
+    "ReplicationController": {
+      "ConcurrentRCSyncs": 5
+    },
+    "ResourceQuotaController": {
+      "ResourceQuotaSyncPeriod": "5m0s",
+      "ConcurrentResourceQuotaSyncs": 5
+    },
+    "SAController": {
+      "ServiceAccountKeyFile": "/var/lib/rancher/k3s/server/tls/service.key",
+      "ConcurrentSATokenSyncs": 5,
+      "RootCAFile": "/var/lib/rancher/k3s/server/tls/server-ca.crt"
+    },
+    "ServiceController": {
+      "ConcurrentServiceSyncs": 1
+    },
+    "TTLAfterFinishedController": {
+      "ConcurrentTTLSyncs": 5
+    }
+  },
+  "kubeletconfig": {
+    "enableServer": true,
+    "staticPodPath": "/var/lib/rancher/k3s/agent/pod-manifests",
+    "syncFrequency": "1m0s",
+    "fileCheckFrequency": "20s",
+    "httpCheckFrequency": "20s",
+    "address": "0.0.0.0",
+    "port": 10250,
+    "tlsCertFile": "/var/lib/rancher/k3s/agent/serving-kubelet.crt",
+    "tlsPrivateKeyFile": "/var/lib/rancher/k3s/agent/serving-kubelet.key",
+    "authentication": {
+      "x509": {
+        "clientCAFile": "/var/lib/rancher/k3s/agent/client-ca.crt"
+      },
+      "webhook": {
+        "enabled": true,
+        "cacheTTL": "2m0s"
+      },
+      "anonymous": {
+        "enabled": false
+      }
+    },
+    "authorization": {
+      "mode": "Webhook",
+      "webhook": {
+        "cacheAuthorizedTTL": "5m0s",
+        "cacheUnauthorizedTTL": "30s"
+      }
+    },
+    "registryPullQPS": 5,
+    "registryBurst": 10,
+    "eventRecordQPS": 5,
+    "eventBurst": 10,
+    "enableDebuggingHandlers": true,
+    "healthzPort": 10248,
+    "healthzBindAddress": "127.0.0.1",
+    "oomScoreAdj": -999,
+    "clusterDomain": "cluster.local",
+    "clusterDNS": [
+      "10.43.0.10"
+    ],
+    "streamingConnectionIdleTimeout": "4h0m0s",
+    "nodeStatusUpdateFrequency": "10s",
+    "nodeStatusReportFrequency": "5m0s",
+    "nodeLeaseDurationSeconds": 40,
+    "imageMinimumGCAge": "2m0s",
+    "imageGCHighThresholdPercent": 85,
+    "imageGCLowThresholdPercent": 80,
+    "volumeStatsAggPeriod": "1m0s",
+    "cgroupsPerQOS": true,
+    "cgroupDriver": "cgroupfs",
+    "cpuManagerPolicy": "none",
+    "cpuManagerReconcilePeriod": "10s",
+    "memoryManagerPolicy": "None",
+    "topologyManagerPolicy": "none",
+    "topologyManagerScope": "container",
+    "runtimeRequestTimeout": "2m0s",
+    "hairpinMode": "promiscuous-bridge",
+    "maxPods": 110,
+    "podPidsLimit": -1,
+    "resolvConf": "/run/systemd/resolve/resolv.conf",
+    "cpuCFSQuota": true,
+    "cpuCFSQuotaPeriod": "100ms",
+    "nodeStatusMaxImages": 50,
+    "maxOpenFiles": 1000000,
+    "contentType": "application/vnd.kubernetes.protobuf",
+    "kubeAPIQPS": 5,
+    "kubeAPIBurst": 10,
+    "serializeImagePulls": false,
+    "evictionHard": {
+      "imagefs.available": "5%",
+      "nodefs.available": "5%"
+    },
+    "evictionPressureTransitionPeriod": "5m0s",
+    "evictionMinimumReclaim": {
+      "imagefs.available": "10%",
+      "nodefs.available": "10%"
+    },
+    "enableControllerAttachDetach": true,
+    "makeIPTablesUtilChains": true,
+    "iptablesMasqueradeBit": 14,
+    "iptablesDropBit": 15,
+    "failSwapOn": false,
+    "memorySwap": {},
+    "containerLogMaxSize": "10Mi",
+    "containerLogMaxFiles": 5,
+    "configMapAndSecretChangeDetectionStrategy": "Watch",
+    "enforceNodeAllocatable": [
+      "pods"
+    ],
+    "volumePluginDir": "/usr/libexec/kubernetes/kubelet-plugins/volume/exec/",
+    "logging": {
+      "format": "text"
+    },
+    "enableSystemLogHandler": true,
+    "shutdownGracePeriod": "0s",
+    "shutdownGracePeriodCriticalPods": "0s",
+    "enableProfilingHandler": true,
+    "enableDebugFlagsHandler": true,
+    "seccompDefault": false,
+    "memoryThrottlingFactor": 0.8
+  },
+  "kubeproxy.config.k8s.io": {
+    "FeatureGates": {},
+    "BindAddress": "0.0.0.0",
+    "HealthzBindAddress": "127.0.0.1:10256",
+    "MetricsBindAddress": "127.0.0.1:10249",
+    "BindAddressHardFail": false,
+    "EnableProfiling": false,
+    "ClusterCIDR": "10.42.0.0/16",
+    "HostnameOverride": "ubuntu2004-vagrants",
+    "ClientConnection": {
+      "Kubeconfig": "/var/lib/rancher/k3s/agent/kubeproxy.kubeconfig",
+      "AcceptContentTypes": "",
+      "ContentType": "application/vnd.kubernetes.protobuf",
+      "QPS": 5,
+      "Burst": 10
+    },
+    "IPTables": {
+      "MasqueradeBit": 14,
+      "MasqueradeAll": false,
+      "SyncPeriod": "30s",
+      "MinSyncPeriod": "1s"
+    },
+    "IPVS": {
+      "SyncPeriod": "30s",
+      "MinSyncPeriod": "0s",
+      "Scheduler": "",
+      "ExcludeCIDRs": null,
+      "StrictARP": false,
+      "TCPTimeout": "0s",
+      "TCPFinTimeout": "0s",
+      "UDPTimeout": "0s"
+    },
+    "OOMScoreAdj": -999,
+    "Mode": "iptables",
+    "PortRange": "",
+    "UDPIdleTimeout": "250ms",
+    "Conntrack": {
+      "MaxPerCore": 0,
+      "Min": 131072,
+      "TCPEstablishedTimeout": "0s",
+      "TCPCloseWaitTimeout": "0s"
+    },
+    "ConfigSyncPeriod": "15m0s",
+    "NodePortAddresses": null,
+    "Winkernel": {
+      "NetworkName": "",
+      "SourceVip": "",
+      "EnableDSR": false
+    },
+    "ShowHiddenMetricsForVersion": "",
+    "DetectLocalMode": ""
+  }
+}

@@ -1,0 +1,174 @@
+➜  accuknox k apply -f yaniv-deployment.yaml
+deployment.apps/yaniv-deployment created
+➜  accuknox k apply -f yaniv-deployment.yaml
+➜  accuknox k exec yaniv-deployment-797bc46f47-lh6t2 -ti -- bash
+root@yaniv-deployment-797bc46f47-lh6t2:/# command terminated with exit code 137
+➜  accuknox k get pods
+NAME                               READY   STATUS    RESTARTS   AGE
+yaniv-deployment-86459547f-m64w6   1/1     Running   0          42s
+➜  accuknox k exec yaniv-deployment-86459547f-m64w6 -ti -- bash
+bash: /etc/bash.bashrc: Permission denied
+bash: /root/.bashrc: Permission denied
+bash-5.0# exit
+exit
+➜  accuknox k get pods
+➜  accuknox k edit deployments.apps yaniv-deployment
+error: there was a problem with the editor "vi"
+➜  accuknox
+➜  accuknox
+➜  accuknox k get kubearmorpolicies.security.kubearmor.com -A
+NAMESPACE     NAME                          AGE
+multiubuntu   ksp-group-1-proc-path-block   7d4h
+➜  accuknox k exec yaniv-deployment-86459547f-m64w6 -ti -- bash
+bash: /etc/bash.bashrc: Permission denied
+bash: /root/.bashrc: Permission denied
+bash-5.0# exit
+exit
+➜  accuknox k delete -f yaniv-deployment.yaml
+deployment.apps "yaniv-deployment" deleted
+➜  accuknox k apply -f yaniv-deployment.yaml
+deployment.apps/yaniv-deployment created
+➜  accuknox k get pods
+NAME                                READY   STATUS              RESTARTS   AGE
+yaniv-deployment-797bc46f47-dfd6r   0/1     ContainerCreating   0          3s
+yaniv-deployment-86459547f-fvw9v    0/1     ContainerCreating   0          3s
+yaniv-deployment-86459547f-m64w6    1/1     Terminating         0          2m11s
+➜  accuknox k get pods yaniv-deployment-797bc46f47-dfd6r -oyaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2022-01-25T15:41:53Z"
+  deletionGracePeriodSeconds: 30
+  deletionTimestamp: "2022-01-25T15:42:28Z"
+  generateName: yaniv-deployment-797bc46f47-
+  labels:
+    app: yaniv-deployment
+    pod-template-hash: 797bc46f47
+  name: yaniv-deployment-797bc46f47-dfd6r
+  namespace: default
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: yaniv-deployment-797bc46f47
+    uid: 9300735b-ad5e-40bc-abeb-c9fac79e3699
+  resourceVersion: "5337041"
+  uid: ddc6f0e1-d03d-496d-9d44-88e0e56c93eb
+spec:
+  containers:
+  - args:
+    - -c
+    - while true; do echo hello; sleep 10;done
+    command:
+    - /bin/sh
+    image: ubuntu
+    imagePullPolicy: Always
+    name: ubuntu
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-ncsld
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: gke-jsec-gcp-sandbox-pool-1-ea1c2bc3-bb0c
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: kube-api-access-ncsld
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-25T15:41:53Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-25T15:41:58Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-25T15:41:58Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-25T15:41:53Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: containerd://ee6374320fada48fc92116a04b03bd1c4162a9eed7ee2fc801bd94923d710abf
+    image: docker.io/library/ubuntu:latest
+    imageID: docker.io/library/ubuntu@sha256:b5a61709a9a44284d88fb12e5c48db0409cfad5b69d4ff8224077c57302df9cf
+    lastState: {}
+    name: ubuntu
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-01-25T15:41:58Z"
+  hostIP: 10.128.0.42
+  phase: Running
+  podIP: 10.28.6.191
+  podIPs:
+  - ip: 10.28.6.191
+  qosClass: BestEffort
+  startTime: "2022-01-25T15:41:53Z"
+➜  accuknox
+➜  accuknox
+➜  accuknox k get pods yaniv-deployment-797bc46f47-dfd6r -oyaml
+Error from server (NotFound): pods "yaniv-deployment-797bc46f47-dfd6r" not found
+➜  accuknox k get pods yaniv-deployment-797bc46f47-dfd6r -oyaml
+➜  accuknox k exec yaniv-deployment-86459547f-m64w6 -ti -- bash
+Error from server (NotFound): pods "yaniv-deployment-86459547f-m64w6" not found
+➜  accuknox k get kubearmorpolicies.security.kubearmor.com -A
+NAMESPACE     NAME                          AGE
+multiubuntu   ksp-group-1-proc-path-block   7d4h
+➜  accuknox k deletek
+➜  accuknox k delete kubearmorpolicies.security.kubearmor.com -n multiubuntu ksp-group-1-proc-path-block
+kubearmorpolicy.security.kubearmor.com "ksp-group-1-proc-path-block" deleted
+➜  accuknox k exec yaniv-deployment-86459547f-m64w6 -ti -- bash
+Error from server (NotFound): pods "yaniv-deployment-86459547f-m64w6" not found
+➜  accuknox k exec yaniv-deployment-86459547f-fvw9v -ti -- bash
+root@yaniv-deployment-86459547f-fvw9v:/#
+root@yaniv-deployment-86459547f-fvw9v:/#
+root@yaniv-deployment-86459547f-fvw9v:/# touch 1
+root@yaniv-deployment-86459547f-fvw9v:/# cat 1
+root@yaniv-deployment-86459547f-fvw9v:/# rm 1
+root@yaniv-deployment-86459547f-fvw9v:/# exit
+exit
+➜  accuknox

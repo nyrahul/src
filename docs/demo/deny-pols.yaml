@@ -1,0 +1,16 @@
+---
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: autopol-file-dmbdaqwdtvgctsi
+  namespace: default
+spec:
+  severity: 1
+  selector:
+    matchLabels:
+      app: demo-deployment
+  process:
+    matchPaths:
+    - path: /usr/bin/sleep
+  action: Block
+---

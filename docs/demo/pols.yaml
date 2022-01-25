@@ -13,7 +13,7 @@ spec:
     matchPaths:
     - path: /usr/bin/sleep
       fromSource:
-      - path: /bin/sh
+      - path: /usr/bin/dash
   action: Allow
 ---
 apiVersion: security.kubearmor.com/v1

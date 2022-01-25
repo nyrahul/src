@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: yaniv-deployment
+  name: yaniv-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yaniv-deployment
+  template:
+    metadata:
+      labels:
+        app: yaniv-deployment
+    spec:
+      containers:
+      - image: ubuntu
+        name: ubuntu
+        command: ["/bin/sh"]
+        args: ["-c", "while true; do echo hello; sleep 10;done"]
