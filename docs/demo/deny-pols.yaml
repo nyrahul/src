@@ -11,6 +11,6 @@ spec:
       app: demo-deployment
   process:
     matchPaths:
-    - path: /usr/bin/sleep
+    - path: /usr/bin/ls
   action: Block
 ---
