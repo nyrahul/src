@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kabuntu
+  name: kabuntu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kabuntu
+  template:
+    metadata:
+      labels:
+        app: kabuntu
+    spec:
+      containers:
+      - image: kubearmor/ubuntu-w-utils:0.1
+        name: kabuntu
+        command: ["/bin/sh"]
+        args: ["-c", "while true; do echo hello; sleep 10;done"]
