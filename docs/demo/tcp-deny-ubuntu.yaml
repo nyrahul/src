@@ -1,0 +1,18 @@
+---
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: deny-tcp-conn
+  namespace: default
+spec:
+  severity: 1
+  selector:
+    matchLabels:
+      app: kabuntu
+  network:
+    matchProtocols:
+    - protocol: tcp
+      fromSource:
+        - path: /usr/bin/curl
+  action: Block
+---
