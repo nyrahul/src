@@ -1,0 +1,152 @@
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: autopol-egress-cssntheiergviet
+  namespace: default
+spec:
+  endpointSelector:
+    matchLabels:
+      app: checkoutservice
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        app: paymentservice
+        k8s:io.kubernetes.pod.namespace: default
+    toPorts:
+    - ports:
+      - port: "50051"
+        protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: autopol-ingress-pvmiotdtzzmkgig
+  namespace: default
+spec:
+  endpointSelector:
+    matchLabels:
+      app: checkoutservice
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        app: frontend
+        k8s:io.kubernetes.pod.namespace: default
+    toPorts:
+    - ports:
+      - port: "5050"
+        protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: autopol-egress-xsceyezggglldut
+  namespace: default
+spec:
+  endpointSelector:
+    matchLabels:
+      app: checkoutservice
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        app: emailservice
+        k8s:io.kubernetes.pod.namespace: default
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: autopol-egress-zhrwbscrnenkfft
+  namespace: default
+spec:
+  endpointSelector:
+    matchLabels:
+      app: checkoutservice
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s-app: kube-dns
+        k8s:io.kubernetes.pod.namespace: kube-system
+    toPorts:
+    - ports:
+      - port: "53"
+        protocol: UDP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: autopol-egress-zmtkekrmhujcrqq
+  namespace: default
+spec:
+  endpointSelector:
+    matchLabels:
+      app: checkoutservice
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        app: productcatalogservice
+        k8s:io.kubernetes.pod.namespace: default
+    toPorts:
+    - ports:
+      - port: "3550"
+        protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: autopol-egress-xxgpyrqdjypojsa
+  namespace: default
+spec:
+  endpointSelector:
+    matchLabels:
+      app: checkoutservice
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        app: shippingservice
+        k8s:io.kubernetes.pod.namespace: default
+    toPorts:
+    - ports:
+      - port: "50051"
+        protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: autopol-egress-nsohskpduzmyssf
+  namespace: default
+spec:
+  endpointSelector:
+    matchLabels:
+      app: checkoutservice
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        app: cartservice
+        k8s:io.kubernetes.pod.namespace: default
+    toPorts:
+    - ports:
+      - port: "7070"
+        protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: autopol-egress-efbrnlbtnrlouvg
+  namespace: default
+spec:
+  endpointSelector:
+    matchLabels:
+      app: checkoutservice
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        app: currencyservice
+        k8s:io.kubernetes.pod.namespace: default
+    toPorts:
+    - ports:
+      - port: "7000"
+        protocol: TCP
