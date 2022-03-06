@@ -1,0 +1,102 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: autopol-system-1760649700
+  namespace: default
+spec:
+  severity: 1
+  selector:
+    matchLabels:
+      app: cartservice
+  process:
+    matchPaths:
+    - path: /app/cartservice
+    - path: /bin/grpc_health_probe
+    - path: /sbin/su-exec
+    - path: /usr/bin/find
+      fromSource:
+      - path: /usr/local/bin/docker-entrypoint.sh
+    - path: /usr/bin/id
+      fromSource:
+      - path: /usr/local/bin/docker-entrypoint.sh
+    - path: /usr/local/bin/docker-entrypoint.sh
+  file:
+    matchPaths:
+    - path: /cpu.cfs_period_us
+      fromSource:
+      - path: /app/cartservice
+    - path: /cpu.cfs_quota_us
+      fromSource:
+      - path: /app/cartservice
+    - path: /cpu
+      fromSource:
+      - path: /app/cartservice
+    - path: /data
+      fromSource:
+      - path: /usr/bin/find
+    - path: /dev/urandom
+      fromSource:
+      - path: /app/cartservice
+    - path: /etc/group
+      fromSource:
+      - path: /bin/grpc_health_probe
+      - path: /usr/local/bin/docker-entrypoint.sh
+    - path: /etc/os-release
+      fromSource:
+      - path: /app/cartservice
+    - path: /etc/passwd
+      fromSource:
+      - path: /bin/grpc_health_probe
+      - path: /usr/bin/find
+      - path: /usr/bin/id
+      - path: /usr/local/bin/docker-entrypoint.sh
+    - path: /lib/libz.so.1.2.11
+      fromSource:
+      - path: /app/cartservice
+    - path: /memory/memory.limit_in_bytes
+      fromSource:
+      - path: /app/cartservice
+    - path: /memory/memory.stat
+      fromSource:
+      - path: /app/cartservice
+    - path: /usr/lib/libgcc_s.so.1
+      fromSource:
+      - path: /app/cartservice
+    - path: /usr/lib/libstdc++.so.6.0.28
+      fromSource:
+      - path: /app/cartservice
+    - path: cpuacct/cpu.cfs_period_us
+      fromSource:
+      - path: /app/cartservice
+    - path: cpuacct/cpu.cfs_quota_us
+      fromSource:
+      - path: /app/cartservice
+    matchDirectories:
+    - dir: /
+      fromSource:
+      - path: /bin/grpc_health_probe
+    - dir: /proc/
+      fromSource:
+      - path: /app/cartservice
+      - path: /bin/grpc_health_probe
+    - dir: /sys/
+      fromSource:
+      - path: /app/cartservice
+      - path: /bin/grpc_health_probe
+  network:
+    matchProtocols:
+    - protocol: tcp
+      fromSource:
+      - path: .NET
+      - path: /app/cartservice
+      - path: /bin/grpc_health_probe
+      - path: /usr/local/bin/docker-entrypoint.sh
+      - path: DefaultSocketMa
+      - path: cartservice
+      - path: grpc_health_pro
+    - protocol: udp
+      fromSource:
+      - path: .NET
+      - path: cartservice
+  action: Allow
+---
