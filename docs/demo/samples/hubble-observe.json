@@ -1,0 +1,278 @@
+{
+  "time": "2022-03-06T16:06:28.351280999Z",
+  "verdict": "DROPPED",
+  "drop_reason": 133,
+  "ethernet": {
+    "source": "4e:a8:54:72:e6:1c",
+    "destination": "3a:bc:48:b5:2a:d2"
+  },
+  "IP": {
+    "source": "10.0.0.40",
+    "destination": "10.0.0.83",
+    "ipVersion": "IPv4"
+  },
+  "l4": {
+    "TCP": {
+      "source_port": 38191,
+      "destination_port": 5050,
+      "flags": {
+        "SYN": true
+      }
+    }
+  },
+  "source": {
+    "ID": 3348,
+    "identity": 20366,
+    "namespace": "default",
+    "labels": [
+      "k8s:app=attacker",
+      "k8s:io.cilium.k8s.namespace.labels.kubernetes.io/metadata.name=default",
+      "k8s:io.cilium.k8s.policy.cluster=default",
+      "k8s:io.cilium.k8s.policy.serviceaccount=default",
+      "k8s:io.kubernetes.pod.namespace=default"
+    ],
+    "pod_name": "attacker-7f99cbd557-pjgkg",
+    "workloads": [
+      {
+        "name": "attacker-7f99cbd557",
+        "kind": "ReplicaSet"
+      }
+    ]
+  },
+  "destination": {
+    "ID": 417,
+    "identity": 38995,
+    "namespace": "default",
+    "labels": [
+      "k8s:app=checkoutservice",
+      "k8s:io.cilium.k8s.namespace.labels.kubernetes.io/metadata.name=default",
+      "k8s:io.cilium.k8s.policy.cluster=default",
+      "k8s:io.cilium.k8s.policy.serviceaccount=default",
+      "k8s:io.kubernetes.pod.namespace=default"
+    ],
+    "pod_name": "checkoutservice-8f859666-qjp82",
+    "workloads": [
+      {
+        "name": "checkoutservice-8f859666",
+        "kind": "ReplicaSet"
+      }
+    ]
+  },
+  "Type": "L3_L4",
+  "node_name": "ubuntu2004-vagrants",
+  "event_type": {
+    "type": 5
+  },
+  "traffic_direction": "INGRESS",
+  "drop_reason_desc": "POLICY_DENIED",
+  "Summary": "TCP Flags: SYN"
+}
+{
+  "time": "2022-03-06T16:06:28.351296117Z",
+  "verdict": "DROPPED",
+  "drop_reason": 133,
+  "ethernet": {
+    "source": "4e:a8:54:72:e6:1c",
+    "destination": "3a:bc:48:b5:2a:d2"
+  },
+  "IP": {
+    "source": "10.0.0.40",
+    "destination": "10.0.0.83",
+    "ipVersion": "IPv4"
+  },
+  "l4": {
+    "TCP": {
+      "source_port": 38191,
+      "destination_port": 5050,
+      "flags": {
+        "SYN": true
+      }
+    }
+  },
+  "source": {
+    "ID": 3348,
+    "identity": 20366,
+    "namespace": "default",
+    "labels": [
+      "k8s:app=attacker",
+      "k8s:io.cilium.k8s.namespace.labels.kubernetes.io/metadata.name=default",
+      "k8s:io.cilium.k8s.policy.cluster=default",
+      "k8s:io.cilium.k8s.policy.serviceaccount=default",
+      "k8s:io.kubernetes.pod.namespace=default"
+    ],
+    "pod_name": "attacker-7f99cbd557-pjgkg",
+    "workloads": [
+      {
+        "name": "attacker-7f99cbd557",
+        "kind": "ReplicaSet"
+      }
+    ]
+  },
+  "destination": {
+    "ID": 417,
+    "identity": 38995,
+    "namespace": "default",
+    "labels": [
+      "k8s:app=checkoutservice",
+      "k8s:io.cilium.k8s.namespace.labels.kubernetes.io/metadata.name=default",
+      "k8s:io.cilium.k8s.policy.cluster=default",
+      "k8s:io.cilium.k8s.policy.serviceaccount=default",
+      "k8s:io.kubernetes.pod.namespace=default"
+    ],
+    "pod_name": "checkoutservice-8f859666-qjp82",
+    "workloads": [
+      {
+        "name": "checkoutservice-8f859666",
+        "kind": "ReplicaSet"
+      }
+    ]
+  },
+  "Type": "L3_L4",
+  "node_name": "ubuntu2004-vagrants",
+  "event_type": {
+    "type": 1,
+    "sub_type": 133
+  },
+  "traffic_direction": "INGRESS",
+  "drop_reason_desc": "POLICY_DENIED",
+  "Summary": "TCP Flags: SYN"
+}
+{
+  "time": "2022-03-06T16:06:28.451466933Z",
+  "verdict": "DROPPED",
+  "drop_reason": 133,
+  "ethernet": {
+    "source": "4e:a8:54:72:e6:1c",
+    "destination": "3a:bc:48:b5:2a:d2"
+  },
+  "IP": {
+    "source": "10.0.0.40",
+    "destination": "10.0.0.83",
+    "ipVersion": "IPv4"
+  },
+  "l4": {
+    "TCP": {
+      "source_port": 38192,
+      "destination_port": 5050,
+      "flags": {
+        "SYN": true
+      }
+    }
+  },
+  "source": {
+    "ID": 3348,
+    "identity": 20366,
+    "namespace": "default",
+    "labels": [
+      "k8s:app=attacker",
+      "k8s:io.cilium.k8s.namespace.labels.kubernetes.io/metadata.name=default",
+      "k8s:io.cilium.k8s.policy.cluster=default",
+      "k8s:io.cilium.k8s.policy.serviceaccount=default",
+      "k8s:io.kubernetes.pod.namespace=default"
+    ],
+    "pod_name": "attacker-7f99cbd557-pjgkg",
+    "workloads": [
+      {
+        "name": "attacker-7f99cbd557",
+        "kind": "ReplicaSet"
+      }
+    ]
+  },
+  "destination": {
+    "ID": 417,
+    "identity": 38995,
+    "namespace": "default",
+    "labels": [
+      "k8s:app=checkoutservice",
+      "k8s:io.cilium.k8s.namespace.labels.kubernetes.io/metadata.name=default",
+      "k8s:io.cilium.k8s.policy.cluster=default",
+      "k8s:io.cilium.k8s.policy.serviceaccount=default",
+      "k8s:io.kubernetes.pod.namespace=default"
+    ],
+    "pod_name": "checkoutservice-8f859666-qjp82",
+    "workloads": [
+      {
+        "name": "checkoutservice-8f859666",
+        "kind": "ReplicaSet"
+      }
+    ]
+  },
+  "Type": "L3_L4",
+  "node_name": "ubuntu2004-vagrants",
+  "event_type": {
+    "type": 5
+  },
+  "traffic_direction": "INGRESS",
+  "drop_reason_desc": "POLICY_DENIED",
+  "Summary": "TCP Flags: SYN"
+}
+{
+  "time": "2022-03-06T16:06:28.451488043Z",
+  "verdict": "DROPPED",
+  "drop_reason": 133,
+  "ethernet": {
+    "source": "4e:a8:54:72:e6:1c",
+    "destination": "3a:bc:48:b5:2a:d2"
+  },
+  "IP": {
+    "source": "10.0.0.40",
+    "destination": "10.0.0.83",
+    "ipVersion": "IPv4"
+  },
+  "l4": {
+    "TCP": {
+      "source_port": 38192,
+      "destination_port": 5050,
+      "flags": {
+        "SYN": true
+      }
+    }
+  },
+  "source": {
+    "ID": 3348,
+    "identity": 20366,
+    "namespace": "default",
+    "labels": [
+      "k8s:app=attacker",
+      "k8s:io.cilium.k8s.namespace.labels.kubernetes.io/metadata.name=default",
+      "k8s:io.cilium.k8s.policy.cluster=default",
+      "k8s:io.cilium.k8s.policy.serviceaccount=default",
+      "k8s:io.kubernetes.pod.namespace=default"
+    ],
+    "pod_name": "attacker-7f99cbd557-pjgkg",
+    "workloads": [
+      {
+        "name": "attacker-7f99cbd557",
+        "kind": "ReplicaSet"
+      }
+    ]
+  },
+  "destination": {
+    "ID": 417,
+    "identity": 38995,
+    "namespace": "default",
+    "labels": [
+      "k8s:app=checkoutservice",
+      "k8s:io.cilium.k8s.namespace.labels.kubernetes.io/metadata.name=default",
+      "k8s:io.cilium.k8s.policy.cluster=default",
+      "k8s:io.cilium.k8s.policy.serviceaccount=default",
+      "k8s:io.kubernetes.pod.namespace=default"
+    ],
+    "pod_name": "checkoutservice-8f859666-qjp82",
+    "workloads": [
+      {
+        "name": "checkoutservice-8f859666",
+        "kind": "ReplicaSet"
+      }
+    ]
+  },
+  "Type": "L3_L4",
+  "node_name": "ubuntu2004-vagrants",
+  "event_type": {
+    "type": 1,
+    "sub_type": 133
+  },
+  "traffic_direction": "INGRESS",
+  "drop_reason_desc": "POLICY_DENIED",
+  "Summary": "TCP Flags: SYN"
+}
