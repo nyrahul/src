@@ -1,5 +1,7 @@
 # DVWA
 
+![DVWA k8s](dvwa.png "DVWA K8s deployment with kubearmor")
+
 DVWA installation [here](https://github.com/cytopia/docker-dvwa#kubernetes).
 
 ### allow.yaml
