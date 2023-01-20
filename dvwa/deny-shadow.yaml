@@ -1,0 +1,16 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: deny-shadow
+spec:
+  action: Block
+  file:
+    matchPaths:
+    - path: /etc/shadow
+      action: Block
+  selector:
+    matchLabels:
+      tier: frontend
+      app: dvwa-web
+  severity: 1
+---
