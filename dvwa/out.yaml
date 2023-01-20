@@ -1,0 +1,216 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dvwa-config
+data:
+  RECAPTCHA_PRIV_KEY: ""
+  RECAPTCHA_PUB_KEY: ""
+  SECURITY_LEVEL: "low"
+  PHPIDS_ENABLED: "0"
+  PHPIDS_VERBOSE: "1"
+  PHP_DISPLAY_ERRORS: "1"
+---
+apiVersion: apps/v1
+kind: Deployment
+
+
+###
+### Deployment Metadata
+###
+metadata:
+  name: dvwa-web
+
+
+###
+### Specs
+###
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: dvwa-web
+      tier: frontend
+
+  template:
+
+    # Template Metadata to be used by service for discovery
+    metadata:
+      labels:
+        app: dvwa-web
+        tier: frontend
+
+    # Container/Volume definition
+    spec:
+      containers:
+        - name: dvwa
+          image: cytopia/dvwa:php-8.1
+          ports:
+            - containerPort: 80
+          env:
+            - name: RECAPTCHA_PRIV_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: dvwa-config
+                  key: RECAPTCHA_PRIV_KEY
+            - name: RECAPTCHA_PUB_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: dvwa-config
+                  key: RECAPTCHA_PUB_KEY
+            - name: SECURITY_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: dvwa-config
+                  key: SECURITY_LEVEL
+            - name: PHPIDS_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: dvwa-config
+                  key: PHPIDS_ENABLED
+            - name: PHPIDS_VERBOSE
+              valueFrom:
+                configMapKeyRef:
+                  name: dvwa-config
+                  key: PHPIDS_VERBOSE
+            - name: PHP_DISPLAY_ERRORS
+              valueFrom:
+                configMapKeyRef:
+                  name: dvwa-config
+                  key: PHP_DISPLAY_ERRORS
+
+            - name: MYSQL_HOSTNAME
+              value: dvwa-mysql-service
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: dvwa-secrets
+                  key: DVWA_DATABASE
+            - name: MYSQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dvwa-secrets
+                  key: DVWA_USERNAME
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dvwa-secrets
+                  key: DVWA_PASSWORD
+---
+apiVersion: apps/v1
+kind: Deployment
+
+
+###
+### Deployment Metadata
+###
+metadata:
+  name: dvwa-mysql
+
+
+###
+### Specs
+###
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: dvwa-mysql
+      tier: backend
+
+  template:
+
+    # Template Metadata to be used by service for discovery
+    metadata:
+      labels:
+        app: dvwa-mysql
+        tier: backend
+
+    # Container/Volume definition
+    spec:
+      containers:
+        - name: mysql
+          image: mariadb:10.1
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: dvwa-mysql-vol
+              mountPath: /var/lib/mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dvwa-secrets
+                  key: ROOT_PASSWORD
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: dvwa-secrets
+                  key: DVWA_USERNAME
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dvwa-secrets
+                  key: DVWA_PASSWORD
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: dvwa-secrets
+                  key: DVWA_DATABASE
+      volumes:
+        - name: dvwa-mysql-vol
+          persistentVolumeClaim:
+            claimName: dvwa-mysql-data-claim
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dvwa-secrets
+type: Opaque
+data:
+  ROOT_PASSWORD: czNyMDB0cGE1NQ==
+  DVWA_USERNAME: ZHZ3YQ==
+  DVWA_PASSWORD: cEBzc3dvcmQ=
+  DVWA_DATABASE: ZHZ3YQ==
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dvwa-web-service
+spec:
+  selector:
+    app: dvwa-web
+    tier: frontend
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      # Port accessible inside cluster
+      port: 8081
+      # Port to forward to inside the pod
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dvwa-mysql-service
+spec:
+  selector:
+    app: dvwa-mysql
+    tier: backend
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dvwa-mysql-data-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
