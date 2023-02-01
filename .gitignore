@@ -1,2 +1,3 @@
 wildcard-match/match
 tags
+*.pyc
