@@ -46,3 +46,24 @@ change accuknox with your org name
 ```
 conjurctl role retrieve-key accuknox:user:admin
 ```
+
+# Comments
+
+Comments:
+nginx:
+* We protect nginx configuration
+* We protect nginx certificates: this prevents any bad actor from impersonating conjur server.
+
+conjur-oss:
+* we protect the backend code (ruby), by only allowing ruby to access it.
+* we prevent anyone from using conjurctl command unless the admin needs to perform administratve tasks
+
+postgres:
+* we protect the ssl directory
+* we protect the postgres data folder
+* we block su & psql to prevent the user from impersonating the `postgres` user then connecting to the database without a password.
+
+```
+su postgres
+psql
+```
