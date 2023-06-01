@@ -1,0 +1,40 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: conjur-postgres
+  namespace: conjur
+spec:
+  selector:
+    matchLabels:
+      app: conjur-oss-postgres
+  action: Allow
+  file:
+    matchDirectories:
+    - dir: /etc/certs/
+      recursive: true
+      action: Block
+    - dir: /etc/certs/
+      recursive: true
+      fromSource:
+        - path: /usr/lib/postgresql/10/bin/postgres
+
+    - dir:  /var/lib/postgresql/data/
+      recursive: true
+      action: Block
+    - dir:  /var/lib/postgresql/data/
+      recursive: true
+      fromSource:
+        - path: /usr/lib/postgresql/10/bin/postgres
+    - dir: /
+      recursive: true
+
+  process:
+    matchDirectories:
+      - dir: /
+        recursive: true
+
+    matchPaths:
+      - path: /bin/su
+        action: Block
+      - path: /usr/lib/postgresql/10/bin/psql
+        action: Block

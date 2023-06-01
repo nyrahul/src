@@ -1,0 +1,29 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: conjur-oss
+  namespace: conjur
+spec:
+  selector:
+    matchLabels:
+      kubearmor.io/container.name: "[conjur-oss]"
+  action: Allow
+  file:
+    matchDirectories:
+    - dir: /opt/conjur-server/
+      recursive: true
+      action: Block
+
+    - dir: /opt/conjur-server/
+      recursive: true
+      fromSource:
+      - path: /var/lib/ruby/bin/ruby
+      # Uncomment to gain administrative access to conjur
+      - path: /usr/bin/bash
+    - dir: /
+      recursive: true
+
+  process:
+    matchDirectories:
+      - dir: /
+        recursive: true

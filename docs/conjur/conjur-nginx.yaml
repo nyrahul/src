@@ -1,0 +1,33 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: conjur-nginx
+  namespace: conjur
+spec:
+  selector:
+    matchLabels:
+      kubearmor.io/container.name: "[conjur-nginx]"
+  action: Allow
+  file:
+    matchDirectories:
+    - dir: /etc/nginx/
+      recursive: true
+      action: Block
+    - dir: /etc/nginx/
+      recursive: true
+      fromSource:
+      - path: /usr/sbin/nginx
+    - dir: /opt/conjur/etc/ssl/
+      recursive: true
+      action: Block
+    - dir: /opt/conjur/etc/ssl/
+      recursive: true
+      fromSource:
+      - path: /usr/sbin/nginx
+    - dir: /
+      recursive: true
+
+  process:
+    matchDirectories:
+      - dir: /
+        recursive: true
