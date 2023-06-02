@@ -42,7 +42,7 @@ https://github.com/cyberark/conjur-cli-go/releases
 you need to add `conjur-conjur-oss` to your hosts file and point it to localhost (if you port forward) or to the lb if exposed via ingress, ...
 
 ```
-conjur init -s -u https://conjur-conjur-oss:9443 -a accuknox
+conjur init -s -u https://conjur-conjur-oss:443 -a accuknox
 ```
 
 # conjur login
