@@ -5,9 +5,23 @@ kubectl create namespace "$CONJUR_NAMESPACE"
 DATA_KEY="$(docker run --rm cyberark/conjur data-key generate)"
 HELM_RELEASE=conjur
 VERSION=2.0.6
+```
+
+for eks, gke:
+```
 helm install \
    -n "$CONJUR_NAMESPACE" \
    --set dataKey="$DATA_KEY" \
+   "$HELM_RELEASE" \
+   https://github.com/cyberark/conjur-oss-helm-chart/releases/download/v$VERSION/conjur-oss-$VERSION.tgz
+```
+
+for k3s:
+```
+helm install \
+   -n "$CONJUR_NAMESPACE" \
+   --set dataKey="$DATA_KEY" \
+   --set service.external.enabled=false \
    "$HELM_RELEASE" \
    https://github.com/cyberark/conjur-oss-helm-chart/releases/download/v$VERSION/conjur-oss-$VERSION.tgz
 ```
