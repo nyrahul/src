@@ -61,6 +61,12 @@ change accuknox with your org name
 conjurctl role retrieve-key accuknox:user:admin
 ```
 
+# Resource check 
+
+```
+conjur resource show accuknox:user:admin
+```
+
 # Comments
 
 Comments:
