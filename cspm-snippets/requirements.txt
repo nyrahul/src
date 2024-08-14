@@ -1,0 +1,10 @@
+google-cloud-compute==1.8.0  # https://github.com/googleapis/python-compute
+google-api-core==2.19.0
+google-api-python-client==2.138.0
+google-auth==2.29.0
+google-auth-httplib2==0.2.0
+google-cloud-access-context-manager==0.2.0
+google-cloud-asset==3.26.2
+google-cloud-org-policy==1.11.0
+google-cloud-os-config==1.17.4
+googleapis-common-protos==1.63.0
