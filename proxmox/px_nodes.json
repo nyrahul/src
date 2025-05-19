@@ -1,0 +1,1 @@
+{"data":[{"ssl_fingerprint":"45:E9:E9:CC:86:47:C4:CF:BA:96:9F:F8:71:E1:7C:EB:AD:80:0B:8A:F4:DB:B4:D0:0E:01:39:89:16:55:68:06","maxmem":101155536896,"uptime":364361,"id":"node/proxmox","level":"","maxdisk":117772111872,"disk":8526651392,"mem":49836089344,"cpu":0.0382348125102342,"type":"node","node":"proxmox","maxcpu":24,"status":"online"}]}

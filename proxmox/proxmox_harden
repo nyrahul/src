@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# tokenid= rahul@pam!rj101
+TOKEN="rahul@pam!rj101=1c03b5e4-4550-4cd5-8416-d326260a8cad"
+PROXMOX_SERVER="proxmox:8006"
+
+chk_prerequisites()
+{
+	echo ;
+	# curl
+	# jq
+	# reachability to proxmox server
+}
+
+CURLOPTS="${CURLOPTS:--sk}"
+get_proxmox_data()
+{
+	curl $CURLOPTS -o $2 -H "Authorization: PVEAPIToken=$TOKEN" https://$PROXMOX_SERVER/$1
+	eval $cmd
+	if [ $? -ne 0 ]; then
+		echo "API failed: api=[$cmd]"
+		return
+	fi
+	if [ ! -f "$2" ]; then
+		echo "output file [$2] not created"
+		return
+	fi
+	JSON="$2"
+}
+
+chk_condition()
+{
+	out=$(jq "$1" $JSON)
+	if [ $? -ne 0 ]; then
+		echo "jq failed: field=[$1], JSON=$JSON"
+		return
+	fi
+}
+
+get_proxmox_data "api2/json/nodes/proxmox/certificates/info" "px_certs.json"
+#get_proxmox_data "api2/json/nodes/proxmox/firewall/rules" "px_fwopts.json"
+#get_proxmox_data "api2/json/nodes/proxmox/capabilities" "px_cap.json"
+#get_proxmox_data "api2/json/nodes/proxmox/status" "px_status.json"
+#get_proxmox_data "api2/json/nodes" "px_nodes.json"
+
+# chk_condition '.data."boot-info".secureboot' "0" "medium" "Proxmox Node Secureboot" "Proxmox node secureboot should be enabled" "
+
