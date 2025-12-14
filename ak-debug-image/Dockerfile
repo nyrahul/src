@@ -16,7 +16,7 @@ COPY banner.sh /etc/profile.d/banner.sh
 
 # enable passwordless scp to kali
 RUN mkdir /root/.ssh && chmod 700 /root/.ssh
-COPY id_ed25519 id_ed25519.pub /root/.ssh/
+COPY /home/rahul/.ssh/id_ed25519 /home/rahul/.ssh/id_ed25519.pub /root/.ssh/
 
 # Set bash as entrypoint with login shell to trigger banner
 ENTRYPOINT ["/bin/bash", "-l"]
