@@ -1,0 +1,16 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: deny-kubectl-exec
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: deny-pod-exec
+    match:
+      resources:
+        kinds:
+        - Pod/exec
+    validate:
+      message: "kubectl exec is disabled in this cluster."
+      deny: {}
