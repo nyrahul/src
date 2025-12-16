@@ -1,0 +1,21 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-ephemeral-container-images-wildcard
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+    - name: allow-only-approved-ephemeral-images
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: "Only approved ephemeral debug images are allowed."
+        pattern:
+          spec:
+            =(ephemeralContainers):
+              - image: "nyrahul/ak-debug-image:*"
+

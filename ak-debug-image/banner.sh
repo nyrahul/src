@@ -1,16 +1,18 @@
 #!/bin/bash
+
 cat << EOF
-	╔═══════════════════════════════════════════════════════════════════╗
-	║                                                                   ║
-	║                  WARNING: Authorized access only!                 ║
-	║     Unauthorized access is prohibited and subject to prosecution. ║
-	║            By continuing, you consent to monitoring               ║
-	║                                                                   ║
-	╚═══════════════════════════════════════════════════════════════════╝
+╔═══════════════════════════════════════════════════════════════════╗
+║                                                                   ║
+║                  WARNING: Authorized access only!                 ║
+║     Unauthorized access is prohibited and subject to prosecution. ║
+║            By continuing, you consent to monitoring               ║
+║                                                                   ║
+╚═══════════════════════════════════════════════════════════════════╝
 EOF
-SDIR=".script_$(date +%s)"
-mkdir -p $SDIR
-script -q --timing=$SDIR/timing $SDIR/typescript
-scp -C -o "StrictHostKeyChecking no" -pr $SDIR rahul@192.168.1.234:SSNREC/ 2>/dev/null
-#scriptreplay --timing=$SDIR/timing $SDIR/typescript --divisor=4
+
+SDIR="/.script"
+script -q --timing=$SDIR/timing $SDIR/typescript -c "bash"
+NEWSDIR="/$(hostname)_$(date +%s)"
+mv $SDIR $NEWSDIR
+scp -C -o "StrictHostKeyChecking no" -pr $NEWSDIR rahul@192.168.1.234:SSNREC/ 2>/dev/null >/dev/null
 exit
