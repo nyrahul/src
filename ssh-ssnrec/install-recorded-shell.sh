@@ -3,7 +3,7 @@ set -euo pipefail
 
 # ==============================================================================
 # Install "recorded SSH shell" using util-linux script(1) + sshd ForceCommand
-# Adds a legal banner (sshd Banner) + prints same banner inside recorded session.
+# Shows legal banner only for interactive sessions (not scp/sftp).
 #
 # Usage:
 #   sudo bash install-recorded-ssh.sh
@@ -143,7 +143,7 @@ else
   log "Group '$REC_GROUP' already exists."
 fi
 
-# Create banner file (used by sshd Banner AND printed inside recorded session)
+# Create banner file (used by sshd Banner directive)
 log "Installing SSH banner: $SSH_BANNER_FILE..."
 cat > "$SSH_BANNER_FILE" <<'EOF'
 ************************************************************
@@ -176,6 +176,15 @@ set -euo pipefail
 LOG_ROOT="${LOG_ROOT}"
 BANNER_FILE="${SSH_BANNER_FILE}"
 
+# Pass through scp/sftp commands without recording
+if [[ -n "\${SSH_ORIGINAL_COMMAND:-}" ]]; then
+  case "\${SSH_ORIGINAL_COMMAND}" in
+    scp\ *|/usr/bin/scp\ *|sftp-server*|/usr/lib/openssh/sftp-server*)
+      exec /bin/bash -c "\${SSH_ORIGINAL_COMMAND}"
+      ;;
+  esac
+fi
+
 umask 077
 
 ts="\$(date +%s)"
@@ -201,20 +210,33 @@ meta="\${SDIR}/meta"
 
 SCRIPT_BIN="\$(command -v script)"
 
-# Print banner INSIDE the recorded session, then start an interactive login shell.
-# -lc: run commands then keep environment similar to a login context; we exec bash -l for proper login behavior
-exec "\${SCRIPT_BIN}" \\
+# Print banner for interactive sessions only, then start recorded shell
+if [[ -t 0 && -r "\${BANNER_FILE}" ]]; then
+  cat "\${BANNER_FILE}"
+  echo
+fi
+
+# Remote server configuration for uploading session recordings
+REMOTE_SERVER="rahul@192.168.1.234"
+REMOTE_PATH="SSNREC/"
+
+"\${SCRIPT_BIN}" \\
   --flush \\
   --quiet \\
   --timing="\${timing}" \\
   "\${types}" \\
-  --command "/bin/bash -lc 'if [ -r \"\${BANNER_FILE}\" ]; then cat \"\${BANNER_FILE}\"; fi; echo; exec /bin/bash -l'"
+  --command "/bin/bash -l"
+
+# After script command finishes, upload the session folder to remote server
+if [[ -d "\${SDIR}" ]]; then
+  scp -qr -o StrictHostKeyChecking=no -o BatchMode=yes "\${SDIR}" "\${REMOTE_SERVER}:\${REMOTE_PATH}" 2>/dev/null || true
+fi
 EOF
 
 chmod 0755 "$WRAPPER_PATH"
 chown root:root "$WRAPPER_PATH"
 
-# Write sshd drop-in: global Banner + Match Group ForceCommand
+# Write sshd drop-in: Match Group ForceCommand
 log "Writing sshd drop-in: $SSHD_DROPIN_FILE..."
 {
   echo "# Managed by install-recorded-ssh.sh"
@@ -252,9 +274,9 @@ Next steps:
    scriptreplay --timing <file.timing> <file.typescript>
 
 Notes:
-- SSH Banner is shown before shell; the same banner is also printed inside the recorded session.
+- Banner is shown only for interactive sessions (not scp/sftp).
 - ForceCommand applies even if the client runs: ssh user@host 'cmd'
-- If you need scp/sftp for recorded users, this setup will interfere (can be adapted).
+- scp/sftp are passed through without recording.
 
 EOF
 
