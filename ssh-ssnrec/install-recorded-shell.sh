@@ -6,7 +6,16 @@ set -euo pipefail
 # Shows legal banner only for interactive sessions (not scp/sftp).
 #
 # Usage:
-#   sudo bash install-recorded-ssh.sh
+#   sudo S3_ENDPOINT=https://s3.example.com S3_BUCKET=recordings S3_ACCESS_KEY=xxx S3_SECRET_KEY=yyy bash install-recorded-ssh.sh
+#
+# Required environment variables:
+#   S3_ENDPOINT    - S3-compatible endpoint URL (e.g., https://s3.example.com)
+#   S3_BUCKET      - S3 bucket name (e.g., recordings)
+#   S3_ACCESS_KEY  - S3 access key
+#   S3_SECRET_KEY  - S3 secret key
+#
+# Optional:
+#   S3_PREFIX      - Prefix/folder in bucket (default: SSNREC/)
 #
 # After install:
 #   sudo usermod -aG recorded <username>
@@ -25,6 +34,13 @@ SSH_BANNER_FILE="${SSH_BANNER_FILE:-/etc/ssh/ssh_recorded_banner.txt}"
 
 DISABLE_PORT_FWD="${DISABLE_PORT_FWD:-true}"
 DISABLE_X11="${DISABLE_X11:-true}"
+
+# S3 bucket config (required)
+S3_ENDPOINT="${S3_ENDPOINT:-}"
+S3_BUCKET="${S3_BUCKET:-}"
+S3_ACCESS_KEY="${S3_ACCESS_KEY:-}"
+S3_SECRET_KEY="${S3_SECRET_KEY:-}"
+S3_PREFIX="${S3_PREFIX:-SSNREC}"
 
 # -----------------------------
 # Helpers
@@ -120,6 +136,22 @@ reload_sshd() {
 # -----------------------------
 need_root
 
+# Validate required S3 config
+if [[ -z "$S3_ENDPOINT" ]]; then
+  die "S3_ENDPOINT is required. Example: S3_ENDPOINT=https://s3.example.com"
+fi
+if [[ -z "$S3_BUCKET" ]]; then
+  die "S3_BUCKET is required. Example: S3_BUCKET=recordings"
+fi
+if [[ -z "$S3_ACCESS_KEY" ]]; then
+  die "S3_ACCESS_KEY is required."
+fi
+if [[ -z "$S3_SECRET_KEY" ]]; then
+  die "S3_SECRET_KEY is required."
+fi
+
+log "S3 endpoint: ${S3_ENDPOINT}/${S3_BUCKET}/${S3_PREFIX}"
+
 log "Pre-requisite checks..."
 
 SSHD_BIN="$(find_sshd_bin)"
@@ -130,6 +162,18 @@ if ! cmd_exists script; then
   install_pkg util-linux
 fi
 cmd_exists script || die "Missing 'script'. Install util-linux manually."
+
+if ! cmd_exists curl; then
+  log "'curl' not found; attempting to install curl..."
+  install_pkg curl
+fi
+cmd_exists curl || die "Missing 'curl'. Install curl manually."
+
+if ! cmd_exists openssl; then
+  log "'openssl' not found; attempting to install openssl..."
+  install_pkg openssl
+fi
+cmd_exists openssl || die "Missing 'openssl'. Install openssl manually."
 
 # Ensure sshd drop-in dir exists
 mkdir -p "$SSHD_DROPIN_DIR"
@@ -190,7 +234,8 @@ umask 077
 ts="\$(date +%s)"
 host="\$(hostname -s 2>/dev/null || hostname)"
 USER_NAME="\${USER:-\$(id -un)}"
-SDIR="\${LOG_ROOT}/\${USER_NAME}_\${host}_\${ts}"
+RDIR="\${USER_NAME}_\${host}_\${ts}"
+SDIR="\${LOG_ROOT}/\${RDIR}"
 mkdir -p "\${SDIR}"
 
 types="\${SDIR}/typescript"
@@ -216,9 +261,30 @@ if [[ -t 0 && -r "\${BANNER_FILE}" ]]; then
   echo
 fi
 
-# Remote server configuration for uploading session recordings
-REMOTE_SERVER="rahul@192.168.1.234"
-REMOTE_PATH="SSNREC/"
+# S3 configuration for uploading session recordings
+S3_ENDPOINT="${S3_ENDPOINT}"
+S3_BUCKET="${S3_BUCKET}"
+S3_ACCESS_KEY="${S3_ACCESS_KEY}"
+S3_SECRET_KEY="${S3_SECRET_KEY}"
+S3_PREFIX="${S3_PREFIX}"
+
+# Function to upload a file to S3
+upload_to_s3() {
+  local file="\$1"
+  local s3_key="\$2"
+  local content_type="\${3:-application/octet-stream}"
+  local date_value="\$(date -R)"
+  local resource="/\${S3_BUCKET}/\${s3_key}"
+  local string_to_sign="PUT\n\n\${content_type}\n\${date_value}\n\${resource}"
+  local signature="\$(printf '%b' "\${string_to_sign}" | openssl sha1 -hmac "\${S3_SECRET_KEY}" -binary | base64)"
+
+  curl -s -X PUT "\${S3_ENDPOINT}/\${S3_BUCKET}/\${s3_key}" \\
+    -H "Host: \$(echo "\${S3_ENDPOINT}" | sed 's|https\\?://||')" \\
+    -H "Date: \${date_value}" \\
+    -H "Content-Type: \${content_type}" \\
+    -H "Authorization: AWS \${S3_ACCESS_KEY}:\${signature}" \\
+    --data-binary "@\${file}" 2>/dev/null
+}
 
 "\${SCRIPT_BIN}" \\
   --flush \\
@@ -227,9 +293,13 @@ REMOTE_PATH="SSNREC/"
   "\${types}" \\
   --command "/bin/bash -l"
 
-# After script command finishes, upload the session folder to remote server
+# After script command finishes, upload the session files to S3
 if [[ -d "\${SDIR}" ]]; then
-  scp -qr -o StrictHostKeyChecking=no -o BatchMode=yes "\${SDIR}" "\${REMOTE_SERVER}:\${REMOTE_PATH}" 2>/dev/null || true
+  for f in "\${SDIR}"/*; do
+    [[ -f "\${f}" ]] || continue
+    fname="\$(basename "\${f}")"
+    upload_to_s3 "\${f}" "\${S3_PREFIX}/\${RDIR}/\${fname}" "text/plain" || true
+  done
 fi
 EOF
 
@@ -277,6 +347,7 @@ Notes:
 - Banner is shown only for interactive sessions (not scp/sftp).
 - ForceCommand applies even if the client runs: ssh user@host 'cmd'
 - scp/sftp are passed through without recording.
+- Session recordings are uploaded to S3: ${S3_ENDPOINT}/${S3_BUCKET}/${S3_PREFIX}
 
 EOF
 
