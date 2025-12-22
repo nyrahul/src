@@ -35,6 +35,19 @@ SSH_BANNER_FILE="${SSH_BANNER_FILE:-/etc/ssh/ssh_recorded_banner.txt}"
 DISABLE_PORT_FWD="${DISABLE_PORT_FWD:-true}"
 DISABLE_X11="${DISABLE_X11:-true}"
 
+# Detect the invoking user and their shell
+SUDO_USER="${SUDO_USER:-}"
+if [[ -n "$SUDO_USER" ]]; then
+  INVOKING_USER="$SUDO_USER"
+  # Get the user's login shell from /etc/passwd
+  USER_SHELL="$(getent passwd "$SUDO_USER" | cut -d: -f7)"
+else
+  INVOKING_USER="${USER:-$(id -un)}"
+  USER_SHELL="${SHELL:-/bin/bash}"
+fi
+# Fallback to /bin/bash if detection failed
+USER_SHELL="${USER_SHELL:-/bin/bash}"
+
 # S3 bucket config (required)
 S3_ENDPOINT="${S3_ENDPOINT:-}"
 S3_BUCKET="${S3_BUCKET:-}"
@@ -151,6 +164,7 @@ if [[ -z "$S3_SECRET_KEY" ]]; then
 fi
 
 log "S3 endpoint: ${S3_ENDPOINT}/${S3_BUCKET}/${S3_PREFIX}"
+log "Detected invoking user: ${INVOKING_USER} (shell: ${USER_SHELL})"
 
 log "Pre-requisite checks..."
 
@@ -291,7 +305,7 @@ upload_to_s3() {
   --quiet \\
   --timing="\${timing}" \\
   "\${types}" \\
-  --command "/bin/bash -l"
+  --command "${USER_SHELL} -l"
 
 # After script command finishes, upload the session files to S3
 if [[ -d "\${SDIR}" ]]; then
@@ -329,12 +343,25 @@ log "Validating sshd configuration..."
 # Reload sshd
 reload_sshd
 
+# Add the invoking user to the recorded group
+if [[ -n "$INVOKING_USER" && "$INVOKING_USER" != "root" ]]; then
+  if ! id -nG "$INVOKING_USER" 2>/dev/null | grep -qw "$REC_GROUP"; then
+    log "Adding user '$INVOKING_USER' to group '$REC_GROUP'..."
+    usermod -aG "$REC_GROUP" "$INVOKING_USER"
+  else
+    log "User '$INVOKING_USER' is already a member of group '$REC_GROUP'."
+  fi
+fi
+
 log "Installed successfully."
 
 cat <<EOF
 
-<Next step>:
-Add users to the '$REC_GROUP' group:
+Installation complete.
+- User '$INVOKING_USER' has been added to the '$REC_GROUP' group.
+- Recorded shell configured to use: $USER_SHELL
+
+To add additional users to session recording:
    sudo usermod -aG $REC_GROUP <username>
 
 EOF
