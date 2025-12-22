@@ -333,21 +333,9 @@ log "Installed successfully."
 
 cat <<EOF
 
-Next steps:
-1) Add users to the '$REC_GROUP' group:
+<Next step>:
+Add users to the '$REC_GROUP' group:
    sudo usermod -aG $REC_GROUP <username>
-
-2) New SSH logins for those users will be recorded under:
-   $LOG_ROOT/<username>/*.typescript and *.timing
-
-3) Replay a session:
-   scriptreplay --timing <file.timing> <file.typescript>
-
-Notes:
-- Banner is shown only for interactive sessions (not scp/sftp).
-- ForceCommand applies even if the client runs: ssh user@host 'cmd'
-- scp/sftp are passed through without recording.
-- Session recordings are uploaded to S3: ${S3_ENDPOINT}/${S3_BUCKET}/${S3_PREFIX}
 
 EOF
 
