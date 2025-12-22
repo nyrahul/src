@@ -248,7 +248,7 @@ umask 077
 ts="\$(date +%s)"
 host="\$(hostname -s 2>/dev/null || hostname)"
 USER_NAME="\${USER:-\$(id -un)}"
-RDIR="\${USER_NAME}_\${host}_\${ts}"
+RDIR="\${USER_NAME}@\${host}_\${ts}"
 SDIR="\${LOG_ROOT}/\${RDIR}"
 mkdir -p "\${SDIR}"
 
