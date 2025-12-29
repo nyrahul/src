@@ -16,6 +16,7 @@ S3_BUCKET="${S3_BUCKET:-}"
 S3_ACCESS_KEY="${S3_ACCESS_KEY:-}"
 S3_SECRET_KEY="${S3_SECRET_KEY:-}"
 S3_PREFIX="${S3_PREFIX:-SSNREC}"
+USER_EMAIL="${USER_EMAIL:-anonymous@localhost}"
 
 # Function to upload a file to S3
 upload_to_s3() {
@@ -49,7 +50,7 @@ if [[ -n "$S3_ENDPOINT" && -n "$S3_BUCKET" && -n "$S3_ACCESS_KEY" && -n "$S3_SEC
   for f in "$SDIR"/*; do
     [[ -f "$f" ]] || continue
     fname="$(basename "$f")"
-    upload_to_s3 "$f" "${S3_PREFIX}/${RDIR}/${fname}" "text/plain" >/dev/null 2>&1 || true
+    upload_to_s3 "$f" "${S3_PREFIX}/${USER_EMAIL}/${RDIR}/${fname}" "text/plain" >/dev/null 2>&1 || true
   done
 fi
 

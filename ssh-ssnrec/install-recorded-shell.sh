@@ -28,6 +28,7 @@ set -euo pipefail
 REC_GROUP="${REC_GROUP:-recorded}"
 WRAPPER_PATH="${WRAPPER_PATH:-/usr/local/bin/recorded-shell}"
 LOG_ROOT="${LOG_ROOT:-/var/log/ssh-script}"
+USER_EMAIL="${USER_EMAIL:-anonymous@localhost}"
 SSHD_DROPIN_DIR="${SSHD_DROPIN_DIR:-/etc/ssh/sshd_config.d}"
 SSHD_DROPIN_FILE="${SSHD_DROPIN_FILE:-${SSHD_DROPIN_DIR}/50-recorded-shell.conf}"
 SSH_BANNER_FILE="${SSH_BANNER_FILE:-/etc/ssh/ssh_recorded_banner.txt}"
@@ -232,6 +233,7 @@ cat > "$WRAPPER_PATH" <<EOF
 set -euo pipefail
 
 LOG_ROOT="${LOG_ROOT}"
+USER_EMAIL="${USER_EMAIL}"
 BANNER_FILE="${SSH_BANNER_FILE}"
 
 # Pass through scp/sftp commands without recording
@@ -312,7 +314,7 @@ if [[ -d "\${SDIR}" ]]; then
   for f in "\${SDIR}"/*; do
     [[ -f "\${f}" ]] || continue
     fname="\$(basename "\${f}")"
-    upload_to_s3 "\${f}" "\${S3_PREFIX}/\${RDIR}/\${fname}" "text/plain" || true
+    upload_to_s3 "\${f}" "\${S3_PREFIX}/\${USER_EMAIL}/\${RDIR}/\${fname}" "text/plain" || true
   done
 fi
 EOF
