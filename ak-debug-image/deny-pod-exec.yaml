@@ -12,5 +12,5 @@ spec:
         kinds:
         - Pod/exec
     validate:
-      message: "kubectl exec is disabled in this cluster."
+      message: "kubectl exec is disabled in this cluster. Use kubectl debug instead as specified by the administrator."
       deny: {}
